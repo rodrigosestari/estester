@@ -1,13 +1,13 @@
 import json
 import time
 import unittest
-import urllib
+import urllib.parse
 
 import requests
 
-
 __author__ = "Tatiana Al-Chueyr Pereira Martins"
 __license__ = "GNU GPL v2"
+header = {"Accept": "application/json", "Content-Type": "application/json"}
 
 
 class ElasticSearchException(Exception):
@@ -115,7 +115,7 @@ class ElasticSearchQueryTestCase(ExtendedTestCase):
         if self.settings:
             data["settings"] = self.settings
         json_data = json.dumps(data)
-        response = requests.put(url, proxies=self.proxies, data=json_data)
+        response = requests.put(url, proxies=self.proxies, data=json_data, headers=header)
 
     def load_fixtures(self):
         """
@@ -146,15 +146,16 @@ class ElasticSearchQueryTestCase(ExtendedTestCase):
             body: json with fields of values of document
         """
         for doc in self.fixtures:
-            doc_type = urllib.quote_plus(doc["type"])
-            doc_id = urllib.quote_plus(doc["id"])
+            doc_type = urllib.parse.quote_plus(doc["type"])
+            doc_id = urllib.parse.quote_plus(doc["id"])
             doc_body = doc["body"]
             url = "{0}{1}/{2}/{3}"
             url = url.format(self.host, self.index, doc_type, doc_id)
             response = requests.put(
                 url,
                 data=json.dumps(doc_body),
-                proxies=self.proxies)
+                proxies=self.proxies,
+                headers=header)
             if not response.status_code in [200, 201]:
                 raise ElasticSearchException(response.text)
         time.sleep(self.timeout)
@@ -166,7 +167,7 @@ class ElasticSearchQueryTestCase(ExtendedTestCase):
             index: name of the index to be deleted
         """
         url = "{0}{1}/".format(self.host, self.index)
-        requests.delete(url, proxies=self.proxies)
+        requests.delete(url, proxies=self.proxies,headers=header)
 
     def search(self, query=None):
         """
@@ -177,7 +178,8 @@ class ElasticSearchQueryTestCase(ExtendedTestCase):
         response = requests.post(
             url,
             data=json.dumps(query),
-            proxies=self.proxies)
+            proxies=self.proxies,
+            headers=header)
         return json.loads(response.text)
 
     def tokenize(self, text, analyzer):
@@ -190,7 +192,8 @@ class ElasticSearchQueryTestCase(ExtendedTestCase):
         response = requests.post(
             url,
             data=json.dumps(text),
-            proxies=self.proxies)
+            proxies=self.proxies,
+            headers=header)
         return json.loads(response.text)
 
 
@@ -275,7 +278,7 @@ class MultipleIndexesQueryTestCase(ElasticSearchQueryTestCase):
         if self.settings:
             data["settings"] = settings or self.settings
         json_data = json.dumps(data)
-        response = requests.put(url, proxies=self.proxies, data=json_data)
+        response = requests.put(url, proxies=self.proxies, data=json_data, headers=header)
 
     def load_fixtures(self, index_name="", fixtures=""):
         """
@@ -308,15 +311,17 @@ class MultipleIndexesQueryTestCase(ElasticSearchQueryTestCase):
         index = index_name or self.index
         fixtures = fixtures or self.fixtures
         for doc in fixtures:
-            doc_type = urllib.quote_plus(doc["type"])
-            doc_id = urllib.quote_plus(doc["id"])
+            doc_type = urllib.parse.quote_plus(doc["type"])
+            doc_id = urllib.parse.quote_plus(doc["id"])
             doc_body = doc["body"]
             url = "{0}{1}/{2}/{3}"
             url = url.format(self.host, index, doc_type, doc_id)
+
             response = requests.put(
                 url,
                 data=json.dumps(doc_body),
-                proxies=self.proxies)
+                proxies=self.proxies,
+                headers=header)
             if not response.status_code in [200, 201]:
                 raise ElasticSearchException(response.text)
         time.sleep(self.timeout)
@@ -329,7 +334,7 @@ class MultipleIndexesQueryTestCase(ElasticSearchQueryTestCase):
         """
         index = index_name or self.index
         url = "{0}{1}/".format(self.host, self.index)
-        requests.delete(url, proxies=self.proxies)
+        requests.delete(url, proxies=self.proxies,headers=header)
 
     def search(self, query=None):
         """
@@ -340,7 +345,8 @@ class MultipleIndexesQueryTestCase(ElasticSearchQueryTestCase):
         response = requests.post(
             url,
             data=json.dumps(query),
-            proxies=self.proxies)
+            proxies=self.proxies,
+            headers=header)
         return json.loads(response.text)
 
     def search_in_index(self, index, query=None):
@@ -352,5 +358,6 @@ class MultipleIndexesQueryTestCase(ElasticSearchQueryTestCase):
         response = requests.post(
             url,
             data=json.dumps(query),
-            proxies=self.proxies)
+            proxies=self.proxies,
+            headers=header)
         return json.loads(response.text)

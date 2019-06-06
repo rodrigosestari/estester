@@ -98,8 +98,8 @@ class SimpleMultipleIndexesQueryTestCase(MultipleIndexesQueryTestCase):
                 u'_index': u'professional'
             }
         ]
-        self.assertEqual(response["hits"]["total"], 3)
-        self.assertEqual(sorted(response["hits"]["hits"]), sorted(expected))
+        self.assertEqual(response["hits"]["total"]["value"], 3)
+        self.assertListEqual(list(response["hits"]["hits"]), list(expected))
 
     def test_search_one_index_that_has_item(self):
         query = {
@@ -110,7 +110,7 @@ class SimpleMultipleIndexesQueryTestCase(MultipleIndexesQueryTestCase):
             }
         }
         response = self.search_in_index("personal", query)
-        self.assertEqual(response["hits"]["total"], 1)
+        self.assertEqual(response["hits"]["total"]["value"], 1)
         expected = {u'name': u'Agnessa'}
         self.assertEqual(response["hits"]["hits"][0]["_source"], expected)
 
@@ -123,7 +123,7 @@ class SimpleMultipleIndexesQueryTestCase(MultipleIndexesQueryTestCase):
             }
         }
         response = self.search_in_index("professional", query)
-        self.assertEqual(response["hits"]["total"], 0)
+        self.assertEqual(response["hits"]["total"]["value"], 0)
 
 
 class SimpleQueryTestCase(ElasticSearchQueryTestCase):
@@ -145,14 +145,14 @@ class SimpleQueryTestCase(ElasticSearchQueryTestCase):
     def test_search_by_nothing_returns_two_results(self):
         response = self.search()
         expected = {u"name": u"Nina Fox"}
-        self.assertEqual(response["hits"]["total"], 2)
+        self.assertEqual(response["hits"]["total"]["value"], 2)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
         self.assertEqual(response["hits"]["hits"][1]["_id"], u"2")
 
     def test_search_by_nina_returns_one_result(self):
         response = self.search(SIMPLE_QUERY)
         expected = {u"name": u"Nina Fox"}
-        self.assertEqual(response["hits"]["total"], 1)
+        self.assertEqual(response["hits"]["total"]["value"], 1)
         self.assertEqual(response["hits"]["hits"][0]["_id"], u"1")
         self.assertEqual(response["hits"]["hits"][0]["_source"], expected)
 
