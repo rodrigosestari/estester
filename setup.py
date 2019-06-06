@@ -16,11 +16,11 @@ setup(name="ESTester",
       download_url = 'http://pypi.python.org/pypi/ESTester',
       description=u"Utilities for testing ElasticSearch queries",
       include_package_data=True,
-      install_requires=["requests>=2.0.0"],
+      install_requires=["requests>=2.22.0"],
       license="GNU GPLv2",
       long_description=README,
       packages=find_packages(),
-      tests_require=["coverage==3.6", "nose==1.2.1", "pep8==1.4.1", "mock==1.0.1", "pylint==1.0.0"],
+      tests_require=["coverage==4.5.3", "nose==1.2.1", "pep8==1.7.1", "mock==3.0.5", "pylint==2.3.1"],
       url = "http://github.com/tatiana/estester",
-      version="1.3.0a"
+      version="1.4.0a"
 )
