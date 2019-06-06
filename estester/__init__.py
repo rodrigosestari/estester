@@ -167,7 +167,7 @@ class ElasticSearchQueryTestCase(ExtendedTestCase):
             index: name of the index to be deleted
         """
         url = "{0}{1}/".format(self.host, self.index)
-        requests.delete(url, proxies=self.proxies,headers=header)
+        requests.delete(url, proxies=self.proxies, headers=header)
 
     def search(self, query=None):
         """
@@ -187,11 +187,11 @@ class ElasticSearchQueryTestCase(ExtendedTestCase):
         Run <analyzer> on text and returns a dict containing the tokens.
         """
         url = "{0}{1}/_analyze".format(self.host, self.index)
-        if analyzer != "default":
-            url += "?analyzer={0}".format(analyzer)
         response = requests.post(
             url,
-            data=json.dumps(text),
+            data=json.dumps({
+                "analyzer": analyzer,
+                "text": text}),
             proxies=self.proxies,
             headers=header)
         return json.loads(response.text)
@@ -334,7 +334,7 @@ class MultipleIndexesQueryTestCase(ElasticSearchQueryTestCase):
         """
         index = index_name or self.index
         url = "{0}{1}/".format(self.host, self.index)
-        requests.delete(url, proxies=self.proxies,headers=header)
+        requests.delete(url, proxies=self.proxies, headers=header)
 
     def search(self, query=None):
         """
@@ -353,7 +353,7 @@ class MultipleIndexesQueryTestCase(ElasticSearchQueryTestCase):
         """
         Run a search <query> (JSON) and returns the JSON response.
         """
-        url = "{0}/{1}/_search".format(self.host, index)
+        url = "{0}{1}/_search".format(self.host, index)
         query = {} if query is None else query
         response = requests.post(
             url,

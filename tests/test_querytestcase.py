@@ -1,15 +1,12 @@
 import unittest
-from mock import patch
-from estester import ElasticSearchQueryTestCase, ExtendedTestCase,\
-    MultipleIndexesQueryTestCase
 
+from estester import ElasticSearchQueryTestCase, ExtendedTestCase, \
+    MultipleIndexesQueryTestCase
 
 SIMPLE_QUERY = {
     "query": {
         "query_string": {
-            "fields": [
-                "name"
-            ],
+            "default_field": "name",
             "query": "nina"
         }
     }
@@ -21,7 +18,6 @@ def raise_interruption(self):
 
 
 class TestExtendedTestCase(ExtendedTestCase):
-
     value = 1
 
     def _pre_setup(self):
@@ -47,7 +43,6 @@ class DefaultValuesTestCase(unittest.TestCase):
 
 
 class SimpleMultipleIndexesQueryTestCase(MultipleIndexesQueryTestCase):
-
     data = {
         "personal": {
             "fixtures": [
@@ -104,7 +99,7 @@ class SimpleMultipleIndexesQueryTestCase(MultipleIndexesQueryTestCase):
     def test_search_one_index_that_has_item(self):
         query = {
             "query": {
-                "text": {
+                "term": {
                     "name": "Agnessa"
                 }
             }
@@ -117,7 +112,7 @@ class SimpleMultipleIndexesQueryTestCase(MultipleIndexesQueryTestCase):
     def test_search_one_index_that_doesnt_have_item(self):
         query = {
             "query": {
-                "text": {
+                "term": {
                     "name": "Agnessa"
                 }
             }
@@ -127,7 +122,6 @@ class SimpleMultipleIndexesQueryTestCase(MultipleIndexesQueryTestCase):
 
 
 class SimpleQueryTestCase(ElasticSearchQueryTestCase):
-
     fixtures = [
         {
             "type": "dog",
@@ -168,4 +162,4 @@ class SimpleQueryTestCase(ElasticSearchQueryTestCase):
         items_list = response["tokens"]
         self.assertEqual(len(items_list), 3)
         tokens = [item["token"] for item in items_list]
-        self.assertEqual(sorted(tokens), ['"Nothing', 'declare"', "to"])
+        self.assertEqual(sorted(tokens), ['Nothing', 'declare', 'to'])
